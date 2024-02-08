@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚾숫자야구게임⚾</title>
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    flex-direction: column;
+    background-color: #fceddd;
+}
+
+.button {
+    display: inline-block;
+    padding: 12px 109px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border: 2px solid #6e2828;
+    color: #ffd7b1;
+    background-color: #9d1515;
+    cursor: pointer;
+    border-radius: 32px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    margin-top: 10px;
+}
+
+.button:hover {
+    background-color: #9d1515;
+    color: #ffffff;
+    border-color: #9d1515;
+}
+
+.input-field {
+    padding: 5px;
+    font-size: 19px;
+    border: 3px solid #9d1515;
+    border-radius: 8px;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #000000;
+}
+
+
+
+
+.highlight-strike {
+    color: #ff0d0d;
+}
+
+
+</style>
+</head>
+<body>
+
+<h1>⚾숫자야구게임⚾</h1>
+
+<p>1~9 중 3자리 숫자를 입력하세요</p>
+<input type="number" class="input-field" id="guessInput">
+<button class="button" onclick="checkGuess()">확인</button>
+<p id="result" class="result-text"></p>
+<p id="log"></p>
+
+<script>
+let numbers = generateNumber();
+let attempts = 0; // 시도 횟수 초기화
+
+function generateNumber() {
+    let numbers = [];
+    while (numbers.length < 3) {
+        let randomNumber = Math.floor(Math.random() * 9) + 1;
+        if (!numbers.includes(randomNumber)) {
+            numbers.push(randomNumber);
+        }
+    }
+    console.log(numbers);
+    return numbers;
+}
+
+// 스트라이크와 볼 계산
+function calculateScore(guess) {
+    let strikes = 0;
+    let balls = 0;
+    for (let i = 0; i < 3; i++) {
+        if (guess[i] === numbers[i]) {
+            strikes++;
+        } else if (numbers.includes(guess[i])) {
+            balls++;
+        }
+    }
+    return [strikes, balls];
+}
+
+
+function checkGuess() {
+    const guessInput = document.getElementById("guessInput").value; //사용자가 입력한 값 guessInput에 저장
+    if (guessInput < 100 || guessInput > 999) {
+        document.getElementById("result").textContent = "올바른 형식의 숫자를 입력하세요."; // 세 자리 숫자가 아니라면 오류 메시지를 출력하고 함수를 종료
+        return;
+    }
+    
+    attempts++; // 시도 횟수 증가
+
+    let guess = guessInput.split("").map(Number); //추측한 번호를 guess에 저장
+    let [strikes, balls] = calculateScore(guess); //함수를 호출하여 사용자의 추측에 대한 스트라이크와 볼 수를 계산
+
+  
+    let resultText = '';
+    for (let i = 0; i < 3; i++) {
+        if (guess[i] === numbers[i]) {
+            resultText += `<span class="highlight-strike">${guess[i]}</span>`;
+        } else {
+            resultText += guess[i];
+        }
+    }
+
+    // 결과 메시지 및 로그를 업데이트합니다.
+    document.getElementById("result").innerHTML = resultText;
+    document.getElementById("log").innerHTML += `${attempts}번째 시도 : ${guessInput} ${balls}B${strikes}S<br>`; 
+
+    // 정답을 맞췄을 때 축하 메시지를 표시합니다.
+    if (strikes === 3) {
+        document.getElementById("result").textContent = `축하합니다! ${attempts}번째 시도에 맞췄습니다!`;
+    }
+}
+</script>
+
+</body>
+</html>
